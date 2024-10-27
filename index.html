@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Newsletter Preview Analyzer</title>
+    <style>
+        :root {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #242424;
+            --bg-tertiary: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --border-color: #333333;
+            --accent-color: #4a9eff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        h1 {
+            color: var(--text-primary);
+            margin-bottom: 24px;
+        }
+
+        .container {
+            display: grid;
+            gap: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-family: inherit;
+            margin-bottom: 16px;
+        }
+
+        textarea {
+            height: 200px;
+            resize: vertical;
+            font-family: monospace;
+        }
+
+        .preview-card {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .preview-section {
+            margin-bottom: 24px;
+        }
+
+        .label {
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 8px;
+        }
+
+        .preview-box {
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+        }
+
+        .preview-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .desktop-preview {
+            background: var(--bg-tertiary);
+            border: 12px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .desktop-preview .email-header {
+            display: grid;
+            grid-template-columns: 200px 1fr 100px;
+            gap: 12px;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .mobile-preview {
+            max-width: 350px;
+            background: var(--bg-tertiary);
+            border: 12px solid var(--border-color);
+            border-radius: 24px;
+            padding: 16px;
+            margin: 0 auto;
+        }
+
+        .email-row {
+            display: flex;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sender-avatar {
+            width: 48px;
+            height: 48px;
+            background: var(--bg-primary);
+            border-radius: 50%;
+        }
+
+        .email-content {
+            flex: 1;
+        }
+
+        .subject {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .preview-text {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        .folder {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        .timestamp {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            text-align: right;
+        }
+
+        .desktop-toolbar {
+            display: flex;
+            gap: 8px;
+            padding: 8px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .toolbar-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: none;
+        }
+
+        .close { background: #ff5f57; }
+        .minimize { background: #febc2e; }
+        .maximize { background: #28c840; }
+
+        .preview-label {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Newsletter Preview Analyzer</h1>
+
+        <div class="input-group">
+            <label class="input-label" for="subjectInput">Subject Line</label>
+            <input type="text" id="subjectInput" placeholder="Enter subject line...">
+        </div>
+        
+        <div class="input-group">
+            <label class="input-label" for="htmlInput">Newsletter HTML</label>
+            <textarea id="htmlInput" placeholder="Paste your newsletter HTML here..."></textarea>
+        </div>
+        
+        <div class="preview-card">
+            <div class="preview-section">
+                <div class="label">Preview Text</div>
+                <div id="previewTextContent" class="preview-box">Preview text will appear here</div>
+            </div>
+            
+            <div class="preview-section">
+                <div class="label">Preview Displays</div>
+                <div class="preview-stack">
+                    <!-- Desktop Preview -->
+                    <div>
+                        <div class="preview-label">Desktop View</div>
+                        <div class="desktop-preview">
+                            <div class="desktop-toolbar">
+                                <div class="toolbar-button close"></div>
+                                <div class="toolbar-button minimize"></div>
+                                <div class="toolbar-button maximize"></div>
+                            </div>
+                            <div class="email-header">
+                                <div class="folder">Inbox</div>
+                                <div class="subject" id="desktopSubject">Subject line</div>
+                                <div class="timestamp">9:41 AM</div>
+                            </div>
+                            <div class="email-row">
+                                <div class="sender-avatar"></div>
+                                <div class="email-content">
+                                    <div class="preview-text" id="desktopPreview">Preview text will appear here...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Preview -->
+                    <div>
+                        <div class="preview-label">Mobile View</div>
+                        <div class="mobile-preview">
+                            <div class="email-row">
+                                <div class="sender-avatar"></div>
+                                <div class="email-content">
+                                    <div id="mobileSubject" class="subject">Subject line</div>
+                                    <div id="mobilePreview" class="preview-text">Preview text will appear here...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const htmlInput = document.getElementById('htmlInput');
+        const subjectInput = document.getElementById('subjectInput');
+        const previewTextContent = document.getElementById('previewTextContent');
+        const mobileSubject = document.getElementById('mobileSubject');
+        const mobilePreview = document.getElementById('mobilePreview');
+        const desktopSubject = document.getElementById('desktopSubject');
+        const desktopPreview = document.getElementById('desktopPreview');
+
+        // Listen for both HTML and subject input changes
+        htmlInput.addEventListener('input', updatePreviews);
+        subjectInput.addEventListener('input', updatePreviews);
+
+        function updatePreviews() {
+            const html = htmlInput.value;
+            const manualSubject = subjectInput.value;
+            
+            // Create a temporary DOM element to parse the HTML
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            
+            // Use manual subject if provided, otherwise try to extract from HTML
+            let subject = manualSubject;
+            if (!subject) {
+                const subjectMeta = doc.querySelector('meta[name="subject"], meta[name="og:title"]');
+                const titleElement = doc.querySelector('title');
+                
+                if (subjectMeta) {
+                    subject = subjectMeta.getAttribute('content');
+                } else if (titleElement) {
+                    subject = titleElement.textContent;
+                }
+            }
+            
+            // Extract preview text (common patterns)
+            let previewText = '';
+            const previewMeta = doc.querySelector('meta[name="description"], meta[name="preview"], div[data-preview-text]');
+            
+            if (previewMeta) {
+                previewText = previewMeta.getAttribute('content') || previewMeta.textContent;
+            } else {
+                // Fallback: Get first text content
+                const firstParagraph = doc.querySelector('p, div');
+                if (firstParagraph) {
+                    previewText = firstParagraph.textContent.trim().substring(0, 200) + '...';
+                }
+            }
+            
+            // Update all preview elements
+            previewTextContent.textContent = previewText || 'No preview text found';
+            mobileSubject.textContent = subject || 'No subject found';
+            mobilePreview.textContent = previewText || 'No preview text found';
+            desktopSubject.textContent = subject || 'No subject found';
+            desktopPreview.textContent = previewText || 'No preview text found';
+
+            // Update subject input if it's empty and we found a subject in the HTML
+            if (!manualSubject && subject) {
+                subjectInput.value = subject;
+            }
+        }
+    </script>
+</body>
+</html>
